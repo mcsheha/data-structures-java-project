@@ -2,7 +2,7 @@
  * Created by Mike on 8/30/2016.
  */
 public class HashMap {
-    private final static int TABLE_SIZE = 128;
+    private final static int TABLE_SIZE = 13;
 
     HashEntry[] table;  //creates the table variable (not yet initialized)
 
@@ -16,8 +16,8 @@ public class HashMap {
         int firstSpace = name.indexOf(" ");
         String firstName = name.substring(0,firstSpace);
         String lastName = name.substring(firstSpace).trim();
-        int key = (firstName + lastName).toUpperCase().hashCode();
-        int hash = key % TABLE_SIZE);
+        int key = Math.abs((firstName + lastName).toUpperCase().hashCode());
+        int hash = key % TABLE_SIZE;
         while (table[hash] != null && table[hash].getKey() != key)
             hash = (hash +1) % TABLE_SIZE;
         if (table[hash] == null)
@@ -28,11 +28,12 @@ public class HashMap {
 
 
 
+//This is the real add function
     public void add (String name, String value){
         int firstSpace = name.indexOf(" ");
         String firstName = name.substring(0,firstSpace);
         String lastName = name.substring(firstSpace).trim();
-        int key = (firstName + lastName).toUpperCase().hashCode();
+        int key = Math.abs((firstName + lastName).toUpperCase().hashCode());
         int hash = (key % TABLE_SIZE);
         while (table[hash] != null && table[hash].getKey() != key)
             hash = (hash + 1) % TABLE_SIZE;
@@ -40,11 +41,21 @@ public class HashMap {
     }
 
 
-    public String remove (String name){
+    public void testAdd(String name, String value){
         int firstSpace = name.indexOf(" ");
         String firstName = name.substring(0,firstSpace);
         String lastName = name.substring(firstSpace).trim();
-        int key = (firstName + lastName).toUpperCase().hashCode();
+        int key = Math.abs((firstName + lastName).toUpperCase().hashCode());
+        int hash = (key % TABLE_SIZE);
+        System.out.println(hash);
+    }
+
+
+    public void remove (String name){
+        int firstSpace = name.indexOf(" ");
+        String firstName = name.substring(0,firstSpace);
+        String lastName = name.substring(firstSpace).trim();
+        int key = Math.abs((firstName + lastName).toUpperCase().hashCode());
         int hash = (key % TABLE_SIZE);
         table[hash] = null;
     }
