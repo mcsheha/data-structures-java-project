@@ -7,7 +7,7 @@ public class HashFunction3 {
 
     private final static int TABLE_SIZE = 13;
 
-
+    //Hashes a name to see which bucket it should go in
     public int stringHashFunction(String wordToHash){
         int hashCode = Math.abs(wordToHash.replaceAll("\\s","").toUpperCase().hashCode());
         int bucket = hashCode % TABLE_SIZE;
@@ -15,13 +15,14 @@ public class HashFunction3 {
         return bucket;
     }
 
+    //Creates the main array and fills each bucket with a person list
     HashFunction3(){
         theArray = new PersonList[TABLE_SIZE];
         for(int i = 0; i < TABLE_SIZE; i++)
             theArray[i] = new PersonList();
         }
 
-
+    //Takes previously created Person and inserts them to the Array
     public void insert(Person newPerson){
         String personToHash = newPerson.name;
         int hashKey = stringHashFunction(personToHash);
@@ -29,19 +30,41 @@ public class HashFunction3 {
     }
 
 
-    public String lookUp(String personToFind){
-        int hashKey = stringHashFunction(personToFind);
-        String thePerson = theArray[hashKey].find(hashKey, personToFind);
-        return thePerson;
+    //Takes Person's name, sends Person object PersonList.remove
+    public void remove(String personToDelete){
+        int hashKey = stringHashFunction(personToDelete);
+        Person personObjectToDelete = find(personToDelete);
+        if (personObjectToDelete != null)
+            theArray[hashKey].delete(personObjectToDelete);
+        else
+            System.out.println(personToDelete + " not found.");
     }
 
 
+    //Takes the Person object returns the name and contact info
+    public void lookUp(String personToFind){
+        Person personObjectToFind = find(personToFind);
+        if (personObjectToFind != null)
+            System.out.println(personObjectToFind.name + ": " + personObjectToFind.contactInfo);
+        else
+            System.out.println(personToFind + " not found.");
+    }
+
+
+    //Takes Person's name, returns the person
+    public Person find(String personToFind){
+        int hashKey = stringHashFunction(personToFind);
+        Person thePerson = theArray[hashKey].find(hashKey, personToFind);
+        return thePerson;
+    }
+
+    //Creates new Person, adds them to the Array
     public void add(String name, String contactInfo){
         Person newPerson = new Person(name, contactInfo);
         insert(newPerson);
     }
 
-
+    //Prints out a list of the buckets and contents
     public void displayTheArray(){
         for(int i = 0; i < TABLE_SIZE; i++){
             System.out.println("Bucket " + i + ": ");
@@ -50,7 +73,7 @@ public class HashFunction3 {
     }
 }
 
-
+//Creates a Person object with: name, contact info, key(bucket), and next person
 class Person {
 
     public String name;
@@ -88,9 +111,22 @@ class PersonList {
         newPerson.next = current;
     }
 
-    public void delete(Person personToDelete, int hashKey){
-
+    public void delete(Person personToDelete){
+        Person currentPerson = firstPerson;
+        if(personToDelete == firstPerson){
+            firstPerson = firstPerson.next;
+        }
+        else{
+            Person previousPerson = firstPerson;
+            while(currentPerson != personToDelete) {
+                previousPerson = currentPerson;
+                currentPerson = currentPerson.next;
+            }
+            previousPerson.next = currentPerson.next;
+        }
     }
+
+
 
 
     public void displayPersonList(){
@@ -102,14 +138,14 @@ class PersonList {
     }
 
 
-    public String find(int hashKey, String personToFind){
+    public Person find(int hashKey, String personToFind){
         Person current = firstPerson;
         while(current != null && current.key <= hashKey){
             if(current.name.equals(personToFind))
-                return current.toString();
+                return current;
             current = current.next;
         }
-        return personToFind + " not found.";
+        return null;
     }
 
 
@@ -128,23 +164,22 @@ class PersonList {
         personHashTable.add("Jill Jones","555-235-1118 jillj@hill.com");
         personHashTable.add("John Doe","555-235-1119 jdoe@somedomain.com");
         personHashTable.add("Jane Doe","555-235-1120 jdoe@somedomain.com");
-
-        System.out.println(personHashTable.lookUp("Pat Jones"));
-        System.out.println(personHashTable.lookUp("Billy Kidd"));
-
-        //personHashTable.delete("John Doe");
-
+        personHashTable.lookUp("Pat Jones");
+        personHashTable.lookUp("Billy Kidd");
+        personHashTable.remove("John Doe");
         personHashTable.add("Test Case","555-235-1121 Test_Case@testcase.com");
         personHashTable.add("Nadezhda Kanachekhovskaya","555-235-1122 dr.nadezhda.kanacheckovskaya@somehospital.moscow.ci.ru");
         personHashTable.add("Jo Wu","555-235-1123 wu@h.com");
         personHashTable.add("Millard Fillmore","555-235-1124 millard@theactualwhitehouse.us");
         personHashTable.add("Bob vanDyke","555-235-1125 vandyke@nodomain.com");
         personHashTable.add("Upside Down","555-235-1126 upsidedown@rightsideup.com");
-
-        System.out.println(personHashTable.lookUp("Jack Jones"));
-        System.out.println(personHashTable.lookUp("Nadezhda Kanachekhovskaya"));
-        System.out.println(personHashTable.lookUp("Fake Name"));
-
+        personHashTable.lookUp("Jack Jones");
+        personHashTable.lookUp("Nadezhda Kanachekhovskaya");
+        personHashTable.remove("Jill Jones");
+        personHashTable.remove("John Doe");
+        personHashTable.lookUp("Jill Jones");
+        personHashTable.lookUp("John Doe");
         //personHashTable.displayTheArray();
+
     }
 }
